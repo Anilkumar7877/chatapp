@@ -75,7 +75,7 @@ const ChatContainer = () => {
             {messages.reduce((elements, message, index) => {
               if (index === 0 || getMessageDay(message.createdAt) !== getMessageDay(messages[index - 1].createdAt)) {
                 elements.push(
-                  <div key={`date-${message._id}`} className="sticky top-0 z-10 flex items-center justify-center py-2 bg-zinc-800">
+                  <div key={`date-${message._id}`} className="sticky top-0 flex items-center justify-center py-2 bg-zinc-800">
                     <div className="bg-blue-300 px-4 py-1 rounded-full text-sm text-zinc-900">
                       {getMessageDay(message.createdAt)}
                     </div>

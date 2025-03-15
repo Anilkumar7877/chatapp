@@ -202,11 +202,11 @@ const Stories = () => {
 
             {/* to upload the story */}
             {storyPreview && (
-                <div className='w-full h-full'>
+                <div className='w-full h-full z-60'>
                     <div className="w-full h-full fixed inset-0 flex justify-center items-center">
                         <div className="w-full h-full fixed inset-0 bg-gray-400/20 backdrop-blur-sm"></div>
 
-                        <div className="modal fixed z-10 bg-zinc-900 w-1/2 h-full text-white">
+                        <div className="modal fixed z-60 bg-zinc-900 w-1/2 h-full text-white">
                             <div className='flex justify-between items-center px-4 h-20 bg-zinc-800'>
                                 <div className="flex gap-4 items-center">
                                     <div>
@@ -259,7 +259,7 @@ const Stories = () => {
                     <div className="w-full h-full fixed inset-0 flex justify-center items-center">
                         <div className="w-full h-full fixed inset-0 bg-gray-400/20 backdrop-blur-sm"></div>
 
-                        <div className="modal fixed z-10 bg-zinc-900 py-4 w-1/2 h-full text-white">
+                        <div className="modal fixed z-60 bg-zinc-900 py-4 w-1/2 h-full text-white">
                             <div className='flex justify-between items-center px-4 h-20'>
                                 <div className="flex gap-4 items-center">
                                     <div>
