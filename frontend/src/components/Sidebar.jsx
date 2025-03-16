@@ -15,7 +15,7 @@ import User from '../../../backend/src/models/user.model.js'
 import { Image } from 'lucide-react'
 
 const Sidebar = () => {
-    const { users, groups, getGroups, getUsers, isUserLoading, selectedUser, setSelectedUser, messages, allChatMessages, fetchAllMessages, markMessagesAsRead, searchUserByUniqueId } = useChatStore()
+    const { users, groups, getGroups, getUsers, isUserLoading, selectedUser, setSelectedUser, messages, allChatMessages, fetchAllMessages, markMessagesAsRead, searchUserByUniqueId, showGroupInfo, setShowGroupInfo } = useChatStore()
     const { authUser, onlineUsers, socket } = useAuthStore()
     const { channels, getChannels, createChannel } = useChannelStore()
     const isChannel = selectedUser?.hasOwnProperty('description');
@@ -286,6 +286,7 @@ const Sidebar = () => {
                             onClick={() => {
                                 setSelectedUser(user)
                                 markMessagesAsRead(user._id);
+                                setShowGroupInfo(false);
                             }}
                         >
                             <div className='relative w-1/7'>

@@ -22,6 +22,11 @@ const GroupInfoPage = () => {
     const { updateChannelInfo, isUpdatingChannelInfo, leaveChannel } = useChannelStore()
     const [showAllDocuments, setShowAllDocuments] = useState(false);
 
+    // Handle undefined selectedUser or groupInfo
+    if (!selectedUser) {
+        return <p className="text-center text-white">No group or chat selected.</p>;
+    }
+
     const isChannel = selectedUser?.description;
     const isGroup = selectedUser?.isGroup;
     const isAdmin = isChannel
@@ -185,14 +190,14 @@ const GroupInfoPage = () => {
     }
     
     // console.log("selectedUser", selectedUser)
-    // console.log("groupInfo", groupInfo)
+    console.log("groupInfo", groupInfo)
 
     return (
         <div className="mx-auto p-6 bg-zinc-800 text-white h-full relative flex flex-col overflow-y-scroll border-1 border-zinc-400 border-collapse">
             <div className="flex justify-center items-center">
                 <div className="relative w-full flex items-center flex-col">
                     <div className="relative">
-                        <img src={selectedImg || groupInfo.profilePic || "/avatar.png"} alt="groupProfile" className="size-48 object-cover rounded-full" />
+                        <img src={selectedImg || groupInfo?.profilePic || "/avatar.png"} alt="groupProfile" className="size-48 object-cover rounded-full" />
                     </div>
                     {isAdmin && (
                         <label
@@ -222,7 +227,7 @@ const GroupInfoPage = () => {
                     </p>)}
                 </div>
             </div>
-            <h1 className="text-2xl font-bold mb-4 text-center">{groupInfo.name}</h1>
+            <h1 className="text-2xl font-bold mb-4 text-center">{groupInfo?.name}</h1>
             {/* <p className="text-gray-300">Group ID: {selectedUser._id}</p> */}
 
             {/* {isChannel && (<p>{selectedUser.description}</p>)} */}
@@ -257,7 +262,7 @@ const GroupInfoPage = () => {
                             </button>
                         </div>
                     ) : (
-                        <p className="bg-zinc-700 p-4 rounded-lg">{groupInfo.description}</p>
+                        <p className="bg-zinc-700 p-4 rounded-lg">{groupInfo?.description}</p>
                     )}
                 </div>
             )}
@@ -323,12 +328,12 @@ const GroupInfoPage = () => {
 
             {!isChannel && (<h2 className="text-xl font-semibold mt-4 mb-2">Group Members:</h2>)}
             {!isChannel && (<ul className="bg-zinc-700 p-4 rounded-lg">
-                {groupInfo.members?.map((member) => (
+                {groupInfo?.members?.map((member) => (
                     <li key={member._id} className="py-2 flex items-center gap-2">
                         <img src={member.profilePic || "/avatar.png"} alt="" className="w-8 h-8 rounded-full" />
                         <span className="flex gap-2">
                             {member.fullName}
-                            {groupInfo.admin.includes(member._id) && (
+                            {groupInfo?.admin.includes(member._id) && (
                                 <span className="bg-blue-800 text-blue-200 rounded-full px-2 flex justify-center items-center">
                                     Admin
                                 </span>
