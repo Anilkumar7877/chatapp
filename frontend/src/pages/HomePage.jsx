@@ -15,17 +15,11 @@ const HomePage = () => {
   const { selectedUser } = useChatStore()
   const { authUser } = useAuthStore()
 
-  const { showStories, showChats, showChannels } = useStoryStore()
-  // console.log("showstories in homepage ", showStories)
-
   if (!selectedUser) {
     return (
-      <div className='flex w-screen h-11/12'>
-        <SidePanel />
-        {(showStories) && <Stories />}
-        {(showChannels) && <Channels />}
-        {(showChats) && <Sidebar />}
-        <div className='w-4/5 flex justify-center items-center'>
+      <div className='flex w-full h-full'>
+        <Sidebar />
+        <div className='w-11/12 flex justify-center items-center'>
           <div className='flex flex-col justify-center items-center gap-4'>
             <span className=''>
               <img src={authUser.profilePic} alt="profile" className='size-40 rounded-full object-cover' />
@@ -40,12 +34,8 @@ const HomePage = () => {
   }
 
   return (
-    <div className='flex h-11/12'>
-      <SidePanel />
-      {(showChats && !showStories && !showChannels) && <Sidebar />}
-      {(!showChats && showStories && !showChannels) && <Stories />}
-      {(!showChats && !showStories && showChannels) && <Channels />}
-      {/* {(!showStories && !showChannels) && <ChatContainer />} */}
+    <div className='flex w-full h-full'>
+      <Sidebar />
       <ChatContainer />
     </div>
   )

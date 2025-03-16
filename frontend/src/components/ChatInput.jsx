@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { useChatStore } from '../store/useChatStore'
 import toast from 'react-hot-toast'
 
@@ -9,13 +9,22 @@ const ChatInput = () => {
     const [document, setDocument] = useState(null);
     const [documentPath, setDocumentPath] = useState("");
     const fileInputRef = useRef(null)
+    const textInputRef = useRef(null);
     const documentInputRef = useRef(null)
     const { sendMessage, documentUpload } = useChatStore()
+
+    useEffect(() => {
+        // Focus the text input when the component mounts
+        if (textInputRef.current) {
+            textInputRef.current.focus();
+        }
+    }, []);
 
     const handleSendMessage = async (e) => {
         e.preventDefault()
         if (!text.trim() && !imagePreview && !document) return;
 
+        let toastId = null; // Initialize toastId for tracking the toast
         try {
             let fileUrl = null;
             let messageText = text.trim();
@@ -24,10 +33,17 @@ const ChatInput = () => {
             if (document) {
                 const formData = new FormData();
                 formData.append("file", document);
+
+                // Show a loading toast while the file is uploading
+                toastId = toast.loading("Uploading file...");
+
                 const uploadResponse = await documentUpload(formData);
                 console.log("uploadResponse: ", uploadResponse);
                 fileUrl = uploadResponse.path;
                 messageText = document.name;
+
+                // Update the toast to success after the file is uploaded
+                toast.success("File uploaded successfully", { id: toastId });
             }
 
             await sendMessage({
@@ -44,6 +60,11 @@ const ChatInput = () => {
             if (documentInputRef.current) documentInputRef.current.value = "";
         } catch (error) {
             console.log("Failed to send Message: ", error)
+
+            // Update the toast to error if the upload fails
+            if (toastId) {
+                toast.error("Failed to upload file", { id: toastId });
+            }
         }
     }
 
@@ -120,7 +141,7 @@ const ChatInput = () => {
             <img src="/jpg.png" alt="" />
         );
         if (fileName?.match(/\.(pdf)$/i)) return (
-            <img src="/pdf.png" alt=""/>
+            <img src="/pdf.png" alt="" />
         );
         if (fileName?.match(/\.(doc|docx)$/i)) return (
             <img src="/doc.png" alt="" />
@@ -182,26 +203,18 @@ const ChatInput = () => {
             </div>
 
             <form onSubmit={handleSendMessage} className='flex items-center w-full gap-4' method="post" encType="multipart/form-data">
-                <button
+                <span
                     className='bg-blue-500 rounded-full px-2.5 py-2.5 hover:bg-blue-600'
                     onClick={() => fileInputRef.current?.click()}
                 >
                     <img src="/image-icon.svg" alt="image" className='w-6' />
-                </button>
-                <button
+                </span>
+                <span
                     className='bg-blue-500 rounded-full py-2.5 px-2.5 hover:bg-blue-600'
                     onClick={handleDocumentClick}
-                    type="button"
                 >
                     <img src="/paperclip-icon.svg" alt="attachment" className='w-6' />
-                </button>
-                <input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className='w-full outline-2 outline-zinc-500 rounded-full px-4 py-2'
-                    placeholder='Type a message...'
-                />
+                </span>
                 <input
                     type="file"
                     accept='image/*'
@@ -215,6 +228,22 @@ const ChatInput = () => {
                     ref={documentInputRef}
                     onChange={handleDocumentChange}
                     className='hidden w-full outline-2 outline-zinc-500 rounded-full px-4 py-2'
+                />
+                <input
+                    type="text"
+                    value={text}
+                    ref={textInputRef}
+                    onChange={(e) => setText(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault(); // Prevent the default form submission
+                            if (text.trim() || imagePreview || document) {
+                                handleSendMessage(e); // Call the message sending function
+                            }
+                        }
+                    }}
+                    className='w-full outline-2 outline-zinc-500 rounded-full px-4 py-2'
+                    placeholder='Type a message...'
                 />
                 <button className='bg-blue-500 rounded-full py-2.5 px-2.5 hover:bg-blue-600 flex justify-center items-center' type='submit'>
                     <img src="/send-icon.svg" alt="send" className='w-6' />

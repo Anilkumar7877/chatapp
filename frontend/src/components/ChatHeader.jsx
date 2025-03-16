@@ -25,14 +25,14 @@ const ChatHeader = () => {
       >
         <span className="w-10 h-10 rounded-full overflow-hidden">
           <img
-            src={selectedUser.profilePic || "/avatar.png"}
-            alt={selectedUser.fullName}
+            src={selectedUser?.profilePic || "/avatar.png"}
+            alt={selectedUser?.fullName}
             width={36}
             className="rounded-full object-cover w-10 h-10"
           />
         </span>
         <h2 className="font-semibold text-lg">
-          {selectedUser.members ? selectedUser.name : selectedUser.fullName}
+          {selectedUser?.members ? selectedUser?.name : selectedUser?.fullName}
         </h2>
       </div>
     </div>

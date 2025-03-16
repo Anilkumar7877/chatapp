@@ -61,8 +61,10 @@ export const useChatStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get(`/message/${userId}`);
             set({ messages: res.data });
+            console.log("messages in the usechatstore: ", messages);
         } catch (error) {
-            toast.error(error.response.data.message);
+            console.log("error in getMessages", error);
+            // toast.error(error.response?.data?.message);
         } finally {
             set({ isMessagesLoading: false });
         }
@@ -98,6 +100,12 @@ export const useChatStore = create((set, get) => ({
             console.log("message data ", data)
             const res = await axiosInstance.post(`/message/send/${selectedUser._id}`, data)
             set({ messages: [...messages, res.data] })
+            set({
+                allChatMessages: {
+                    ...get().allChatMessages,
+                    [selectedUser._id]: [...get().allChatMessages[selectedUser._id], res.data]
+                }
+            })
         } catch (error) {
             // toast.error(error.response.data.message);
             console.log("error in sendMessages ", error);
@@ -112,8 +120,14 @@ export const useChatStore = create((set, get) => ({
         const authUser = useAuthStore.getState().authUser; // Get authUser from useAuthStore
 
         socket.on('newMessage', (newMessage) => {
-            const { allChatMessages } = get();
+            const { allChatMessages, messages } = get();
             // const isChannelMessage = selectedUser?.description && newMessage.receiverId === selectedUser._id;
+
+            // Check if the message is for the selected user
+            const isMessageForSelectedUser =
+                newMessage.senderId._id === selectedUser._id ||
+                newMessage.receiverId === selectedUser._id;
+
             const isChannelMessage = newMessage.isChannelMessage;
             if (isChannelMessage) {
                 console.log("received a channel newMessage event", newMessage);
@@ -139,15 +153,9 @@ export const useChatStore = create((set, get) => ({
                     newMessage.receiverId === selectedUser._id; //only in case of DM
                 console.log("isMessageSentFromSelectedUser: ", isMessageSentFromSelectedUser);
                 if (!isMessageSentFromSelectedUser) return;
-            } else {
+            }
+            else {
                 console.log("received a newMessage event", newMessage);
-                // console.log("message in the newMessage event: ", newMessage);
-                // Check if the current user is in the group members array
-                // const isUserInGroup = selectedUser?.members?.includes(socket.userId);
-                // if (!isUserInGroup) {
-                //     console.log("user is not in the group");
-                //     return;
-                // };
                 const isMessageSentFromSelectedUser = newMessage.receiverId === selectedUser._id;
                 if (!isMessageSentFromSelectedUser) return;
                 const isTargetGroup = newMessage.receiverId === selectedUser._id;
@@ -165,22 +173,18 @@ export const useChatStore = create((set, get) => ({
                 return;
                 // console.log("user is in the group");
             }
-            // set((state) => ({
-            //     messages: [...state.messages, newMessage],
-            //     // Also update allChatMessages to reflect unread status
-            //     allChatMessages: {
-            //         ...state.allChatMessages,
-            //         [newMessage.senderId._id]: [
-            //             ...(state.allChatMessages[newMessage.senderId._id] || []),
-            //             { ...newMessage, read: false }
-            //         ]
-            //     }
-            // }));
+
+            if (isMessageForSelectedUser) {
+                // Update the `messages` array
+                set((state) => ({
+                    messages: [...state.messages, newMessage],
+                }));
+            }
 
             const chatMessages = allChatMessages[newMessage.senderId._id] || [];
             const updatedMessages = [...chatMessages, {
                 ...newMessage,
-                read: selectedUser?._id === newMessage.receiverId ? [...newMessage.read, authUser._id] : newMessage.read 
+                read: selectedUser?._id === newMessage.receiverId ? [...newMessage.read, authUser._id] : newMessage.read
             }];
 
             set(state => ({
@@ -238,11 +242,11 @@ export const useChatStore = create((set, get) => ({
             });
 
             if (response.status === 200) {
-                toast.success("File uploaded successfully");
+                // toast.success("File uploaded successfully");
                 return response.data;
             }
         } catch (error) {
-            toast.error("Error uploading file");
+            // toast.error("Error uploading file");
             throw error;
         }
     },

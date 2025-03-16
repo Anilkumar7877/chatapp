@@ -12,6 +12,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import User from '../../../backend/src/models/user.model.js'
+import { Image } from 'lucide-react'
 
 const Sidebar = () => {
     const { users, groups, getGroups, getUsers, isUserLoading, selectedUser, setSelectedUser, messages, allChatMessages, fetchAllMessages, markMessagesAsRead, searchUserByUniqueId } = useChatStore()
@@ -29,6 +30,7 @@ const Sidebar = () => {
     const [searchUserInput, setSearchUserInput] = useState(false);
     const [searchChats, setSearchChats] = useState(false);
 
+    // Fetch users, groups and channels
     useEffect(() => {
         getUsers();
         getGroups();
@@ -36,8 +38,9 @@ const Sidebar = () => {
         getChannels();
     }, [getUsers, getGroups, getChannels, fetchAllMessages]);
 
+    //fetch all messages if users, groups and channels are loaded
     useEffect(() => {
-        if (users.length > 0 || groups.length > 0 || channels.length > 0) {
+        if (users.length >= 0 && groups.length >= 0 && channels.length >= 0) {
             fetchAllMessages();
         }
     }, [users, groups, channels, fetchAllMessages]);
@@ -69,6 +72,7 @@ const Sidebar = () => {
         }
     }, [groups, channels, socket]);
 
+    // Listen for new messages
     const set = useChatStore.setState;
     useEffect(() => {
         const handleNewMessage = (newMessage) => {
@@ -123,12 +127,14 @@ const Sidebar = () => {
                     }
                 }));
                 console.log("updatedMessages are", updatedMessages)
-            } else {
+            }
+            else {
                 // Existing direct message handling
                 console.log("newMessage is a direct message", newMessage)
 
                 const chatMessages = allChatMessages[newMessage.senderId._id] || [];
 
+                // Create updated messages array with read status
                 const updatedMessages = [
                     ...chatMessages,
                     {
@@ -137,6 +143,7 @@ const Sidebar = () => {
                     }
                 ];
 
+                // Update store with new messages
                 set((state) => ({
                     allChatMessages: {
                         ...state.allChatMessages,
@@ -156,8 +163,11 @@ const Sidebar = () => {
     if (isUserLoading) return (
         <div className='w-1/4 bg-zinc-600 py-4 flex flex-col gap-4'>Loading....</div>
     )
+
+    // Combine users, groups and channels
     const usersAndGroups = [...users, ...groups, ...channels];
 
+    // Filter chats based on search term and filter
     const filteredChats = usersAndGroups.filter(chat => {
         if (filter === 'All') return true;
         if (filter === 'Groups') return chat.members && !chat.isChannel;
@@ -181,17 +191,7 @@ const Sidebar = () => {
         return new Date(bLastMessage.createdAt) - new Date(aLastMessage.createdAt);
     });
 
-    // const handleCreateChannel = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         await createChannel({ channelName, channelDescription });
-    //         setShowCreateChannel(false);
-    //         toast.success('Channel created successfully!');
-    //     } catch (error) {
-    //         toast.error('Failed to create channel');
-    //     }
-    // };
-
+    //search user by his ID
     const handleSearchById = async (e) => {
         e.preventDefault();
         try {
@@ -208,46 +208,32 @@ const Sidebar = () => {
     // console.log("chats", users)
 
     // console.log("channels", channels)
-    console.log("messages", messages)
-    console.log("allChatMessages", allChatMessages)
+
+    // console.log("messages", messages)
+    // console.log("allChatMessages", allChatMessages)
     return (
         <div className='w-1/4 bg-zinc-600 py-4 flex flex-col gap-4'>
+            {/* group modal */}
             <CreateGroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-            
+
             <div className='flex justify-between'>
                 <h1 className='text-2xl text-white font-bold px-8'>Chats</h1>
                 <span className='flex gap-2 mx-4'>
+                    {/* create group button */}
                     <button className='bg-blue-500 px-2 py-2 rounded-full hover:bg-blue-600'
                         onClick={() => setIsModalOpen(true)}
                     >
                         <img src="/create-group-icon.svg" alt="" className='w-5 h-5' />
                     </button>
-                    {/* <button className='bg-blue-500 px-2 py-2 rounded-full hover:bg-blue-600'
-                        onClick={() => setSearchChats(!searchChats)}
-                    >
-                        <img src="/search-icon.svg" alt="" className='w-5 h-5' />
-                    </button> */}
+                    {/* search user by his ID */}
                     <button className='bg-blue-500 px-2 py-2 rounded-full hover:bg-blue-600'
                         onClick={() => setSearchUserInput(!searchUserInput)}
                     >
                         <img src="/search-user-icon.svg" alt="" className='w-5 h-5' />
                     </button>
-                    {/* <button
-                        onClick={() => setShowCreateChannel(true)}
-                        className="bg-blue-500 text-white px-2 py-2 rounded-full hover:bg-blue-600"
-                    >
-                        <img src="/channel-icon.svg" alt="" className='w-5 h-5' />
-                    </button> */}
-                    {/* <Link to="/api/story" onClick={() => set({ showStories: true })}> */}
-                    {/* <button
-                        className="bg-blue-500 text-white px-2 py-2 rounded-full hover:bg-blue-600"
-                        onClick={() => setShowStories(!showStories)}
-                    >
-                        story
-                    </button> */}
-                    {/* </Link> */}
                 </span>
             </div>
+            {/* to search the user by his ID */}
             {searchUserInput && (<div className='flex justify-start px-4 gap-2'>
                 <input
                     type='text'
@@ -259,10 +245,10 @@ const Sidebar = () => {
                 <button className='bg-blue-500 text-white px-2 rounded-md hover:bg-blue-600'
                     onClick={handleSearchById}
                 >
-                    {/* <img src="/search-icon.svg" alt="" /> */}
                     Search
                 </button>
             </div>)}
+            {/* to search among the chats(names) */}
             <div className='flex justify-start px-4'>
                 <input
                     type='text'
@@ -272,26 +258,25 @@ const Sidebar = () => {
                     className='w-full py-1 px-2 border rounded-md border-blue-50 outline-none text-white font-semibold'
                 />
             </div>
+            {/* filters for the chats */}
             <div className='flex gap-4 px-8'>
                 <div className='border-1 border-blue-500 hover:bg-blue-500 hover: cursor-pointer rounded-lg px-2 text-white' onClick={() => setFilter('All')}>All</div>
                 <div className='border-1 border-blue-500 hover:bg-blue-500 hover: cursor-pointer rounded-lg px-2 text-white' onClick={() => setFilter('Groups')}>Groups</div>
                 <div className='border-1 border-blue-500 hover:bg-blue-500 hover: cursor-pointer rounded-lg px-2 text-white' onClick={() => setFilter('Channels')}>Channels</div>
             </div>
+            {/* showing all the sorted chats */}
             <div className='text-white overflow-y-scroll'>
                 {sortedChats.map((user) => {
                     // Get last message for this chat
                     const userMessages = allChatMessages[user._id] || [];
                     const lastMessage = userMessages[userMessages.length - 1];
-                    // console.log("lastMessage", lastMessage)
+                    // Count unread messages
                     const unreadCount = selectedUser?._id !== user._id ?
                         userMessages.filter(msg =>
                             (msg.hasOwnProperty('read') && !msg.read.includes(authUser._id) && msg.senderId._id !== authUser._id)
                         ).length : 0;
-
-                    // console.log("unreadCount", userMessages.filter(msg =>
-                    //     (msg.hasOwnProperty('read') && !msg.read && msg.senderId._id !== authUser._id)
-                    // ))
                     return (
+                        //showing the user button in the sidebar
                         <button
                             key={user._id}
                             className={`
@@ -307,6 +292,7 @@ const Sidebar = () => {
                                 <span className={`overflow-hidden`}>
                                     <img src={user.profilePic || (user.isChannel ? "/channel-icon.svg" : (user.members ? "/group-avatar.png" : "/avatar.png"))} alt="" className={`w-10 h-10 object-cover ${user.isChannel ? "rounded-sm" : "rounded-full"}`} />
                                 </span>
+                                {/* showing green dot if the user is online */}
                                 {onlineUsers.includes(user._id) && (
                                     <span
                                         className='absolute bottom-0 right-0 size-3 bg-green-500 rounded-full ring-2 ring-zinc-900'
@@ -329,7 +315,11 @@ const Sidebar = () => {
                                         truncate font-semibold
                                         ${unreadCount > 0 ? "text-blue-300 font-semibold" : ""}
                                     `}>
-                                        {lastMessage?.text || 'No messages yet'}
+                                        {lastMessage?.image ? (
+                                            <span className='flex justify-center items-center gap-1'>
+                                                <Image className="w-4 "/> Image
+                                            </span>
+                                        ) : (lastMessage?.text || "No messages yet")}
                                     </span>
                                     <span className='text-xs text-zinc-400 font-semibold'>
                                         {lastMessage?.createdAt && new Date(lastMessage?.createdAt).toLocaleTimeString([], {

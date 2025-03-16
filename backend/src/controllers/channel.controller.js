@@ -39,6 +39,7 @@ export const getChannels = async (req, res) => {
             allChannels,
             followingChannels
         });
+
     } catch (error) {
         console.log("Error in getChannels:", error);
         res.status(500).json({ message: "Error fetching channels" });

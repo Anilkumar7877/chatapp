@@ -10,6 +10,9 @@ import SignUpPage from './pages/SignUpPage'
 import LogInPage from './pages/LogInPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
+import ChannelPage from './pages/ChannelPage'
+import StoryPage from './pages/StoryPage'
+import SidePanel from './components/SidePanel'
 
 const App = () => {
 
@@ -29,19 +32,25 @@ const App = () => {
 
   return (
     <div className='h-screen w-screen flex'>
-      
-      <div className='w-full h-full flex flex-col'>
+      <div className='h-full w-full flex flex-col'>
         <Navbar />
+        <div className='w-full h-11/12 flex'>
+          <SidePanel />
+          <div className='[width:calc(100%-48px)] h-full'>
 
-        <Routes>
-          <Route path='/' element={authUser ? <HomePage /> : <Navigate to={"/login"} />} />
-          <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />} />
-          <Route path='/login' element={!authUser ? <LogInPage /> : <Navigate to={"/"} />} />
-          <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />} />
-          <Route path='/settings' element={<SettingsPage />} />
-        </Routes>
+            <Routes>
+              <Route path='/' element={authUser ? <HomePage /> : <Navigate to={"/login"} />} />
+              <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to={"/"} />} />
+              <Route path='/login' element={!authUser ? <LogInPage /> : <Navigate to={"/"} />} />
+              <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={"/login"} />} />
+              <Route path='/settings' element={<SettingsPage />} />
+              <Route path='/story' element={authUser ? <StoryPage /> : <Navigate to={"/login"} />} />
+              <Route path='/channel' element={authUser ? <ChannelPage /> : <Navigate to={"/login"} />} />
+            </Routes>
 
-        <Toaster />
+            <Toaster />
+          </div>
+        </div>
       </div>
     </div>
   )

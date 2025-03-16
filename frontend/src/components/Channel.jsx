@@ -12,17 +12,30 @@ const Channel = () => {
     const { authUser } = useAuthStore();
     const [channelName, setChannelName] = useState('');
     const [channelDescription, setChannelDescription] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const [showCreateChannel, setShowCreateChannel] = useState(false)
+
     useEffect(() => {
-        getChannels();
-    }, [authUser]);
+        const fetchChannels = async () => {
+            setIsLoading(true);
+            await getChannels();
+            setIsLoading(false);
+        };
+        fetchChannels();
+    }, [getChannels]);
+
+    if (isLoading) {
+        return (
+            <div className="w-1/4 flex flex-col gap-6 text-white bg-zinc-600 py-4 overflow-y-scroll">Loading channels...</div>
+        );
+    }
 
     const filteredChannels = channels.filter(channel =>
         channel.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const exploreChannels = allChannels.filter(channel =>
+    const exploreChannels = allChannels?.filter(channel =>
         !channels.some(followingChannel => followingChannel._id === channel._id) &&
         channel.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -48,6 +61,11 @@ const Channel = () => {
             toast.error('Failed to create channel');
         }
     };
+
+    console.log('allChannels', allChannels);
+    console.log('channels', channels);
+    console.log('filteredChannels', filteredChannels);
+    console.log('exploreChannels', exploreChannels);
 
     return (
         <div className='w-1/4 flex flex-col gap-6 text-white bg-zinc-600 py-4 overflow-y-scroll'>
@@ -107,7 +125,7 @@ const Channel = () => {
                     placeholder='Search channels...'
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className='w-full p-2 border rounded'
+                    className='w-full p-2 border rounded outline-none'
                 />
             </div>
             <div className='w-full text-black flex flex-col gap-4'>
@@ -127,11 +145,11 @@ const Channel = () => {
                         </div>
                         <div className="flex min-w-6/7 gap-2 justify-between items-center">
                             <span className="font-medium flex flex-col w-1/2">
-                                <span className='w-full truncate font-medium flex'>
+                                <span className='w-full truncate font-medium text-md flex'>
                                     {channel.name || 'Channel Name'}
                                 </span>
-                                <span className='w-full truncate text-sm font-normal flex'>
-                                    followers
+                                <span className='w-full truncate text-sm font-semibold text-zinc-400 flex'>
+                                    {channel.members?.length || 0} followers
                                 </span>
                             </span>
                             <span className='w-1/3'>
@@ -167,11 +185,11 @@ const Channel = () => {
                         </div>
                         <div className="flex min-w-6/7 gap-2 justify-between items-center">
                             <span className="font-medium flex flex-col w-1/2">
-                                <span className='w-full truncate font-medium flex'>
+                                <span className='w-full truncate font-medium text-md flex'>
                                     {channel.name || 'Channel Name'}
                                 </span>
-                                <span className='w-full truncate text-sm font-normal flex'>
-                                    followers
+                                <span className='w-full truncate text-sm font-semibold text-zinc-400 flex'>
+                                    {channel.members?.length || 0} followers
                                 </span>
                             </span>
                             <span className='w-1/3'>

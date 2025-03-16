@@ -46,26 +46,26 @@ const CreateGroupModal = ({ isOpen, onClose }) => {
         <div className="w-full h-full fixed inset-0 flex justify-center items-center z-50">
             <div className="w-full h-full fixed inset-0 bg-gray-400/20 backdrop-blur-sm"></div>
 
-            <div className="modal-content flex flex-col justify-between bg-zinc-800 text-white p-4 rounded-lg relative w-1/2 h-1/2 border-blue-400 border-1">
+            <div className="modal-content flex flex-col bg-zinc-800 text-white p-4 rounded-lg relative w-1/2 h-1/2 gap-2 border-blue-400 border-1">
                 <button onClick={onClose} className="close-button absolute top-2 right-2 text-black text-2xl p-2 rounded-full hover:bg-zinc-600">
                     <img src="/cross-icon.svg" alt="" />
                 </button>
 
-                <h2 className="text-lg font-semibold mb-4">Create a Group</h2>
+                <h2 className="text-lg font-semibold">Create a Group</h2>
 
                 <input
                     type="text"
                     placeholder="Enter group name"
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
-                    className="w-full border p-2 rounded-md mb-4"
+                    className="w-full border p-2 rounded-md"
                 />
 
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">Select Users:</h3>
-                    <div className="max-h-40 overflow-y-auto border rounded p-2">
+                <div className="flex flex-col gap-2">
+                    <h3 className="text-lg font-semibold">Select Users:</h3>
+                    <div className="max-h-40 overflow-y-auto border rounded p-2 flex flex-col gap-2">
                         {users?.map((user) => (
-                            <div key={user._id} className="flex items-center gap-2 mb-2">
+                            <div key={user._id} className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     id={user._id}

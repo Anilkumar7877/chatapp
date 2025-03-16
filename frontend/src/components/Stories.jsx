@@ -16,7 +16,7 @@ import 'swiper/css/pagination';
 
 const Stories = () => {
     const { authUser, updateUserStoryPrivacy } = useAuthStore();
-    const { stories, fetchStories, uploadStory, markStoryAsSeen, fetchStoryViewers, isUploadingStory, setIsUploadingStory, isFetchingStories, setIsFetchingStories } = useStoryStore();
+    const { stories, fetchStories, uploadStory, markStoryAsSeen, fetchStoryViewers, isFetchingStories, setIsFetchingStories } = useStoryStore();
     const [storyPreview, setStoryPreview] = useState(null);
     const { users, getUsers } = useChatStore();
     const [storyFile, setStoryFile] = useState(null);
@@ -49,7 +49,6 @@ const Stories = () => {
     };
 
     const handleUploadStory = async () => {
-        setIsUploadingStory(true);
         if (!storyFile) return;
 
         const formData = new FormData();
@@ -57,19 +56,26 @@ const Stories = () => {
         formData.append('text', storyText);
         formData.append('mediaType', storyFile.type.split('/')[0]); // Send media type (image/video)
 
+        const toastId = toast.loading('Uploading story...');
+
         try {
             await uploadStory(formData);
             setStoryPreview(null);
             setStoryFile(null);
             setStoryText('');
             if (fileInputRef.current) fileInputRef.current.value = '';
-            toast.success('Story uploaded successfully');
+            toast.success('Story uploaded successfully', { id: toastId });
         } catch (error) {
-            toast.error('Failed to upload story');
+            toast.error('Failed to upload story', { id: toastId });
         }
     };
 
     const handleUpdateStoryPrivacy = async () => {
+        // Initialize selectedUsers with users not in storyVisibleTo
+        const storyVisibleTo = authUser.storyVisibleTo || [];
+        const visibleUsers = users.filter(user => !storyVisibleTo.includes(user._id)).map(user => user._id);
+        setSelectedUsers(visibleUsers);
+
         setShowUserSelectionModal(true);
     };
 
@@ -83,6 +89,7 @@ const Stories = () => {
     };
 
     const handleStoryClick = async (story) => {
+        console.log("clicked story: ", story);
         setSelectedStory(story);
         if (story.createdBy._id !== authUser._id && !story.seenBy.includes(authUser._id)) {
             await markStoryAsSeen(story._id);
@@ -109,7 +116,7 @@ const Stories = () => {
     const userStories = stories.myStories || [];
     const recentStories = stories.recentStories || [];
 
-    console.log(userStories, recentStories);
+    console.log(stories)
 
     return (
         <div className="stories-container w-1/4 bg-zinc-600 py-4 flex flex-col gap-4 text-white">
@@ -121,6 +128,7 @@ const Stories = () => {
                     onChange={handleStoryChange}
                     className="hidden"
                 />
+                {/* update story privacy button */}
                 <div className='flex justify-between items-center mb-2 px-4'>
                     <h2 className="font-semibold flex items-center text-2xl">Story</h2>
                     <button onClick={handleUpdateStoryPrivacy} className="update-privacy-button">
@@ -129,6 +137,7 @@ const Stories = () => {
                         </span>
                     </button>
                 </div>
+                {/* add story button */}
                 <button onClick={() => fileInputRef.current?.click()} className="add-story-button w-full">
                     <div className="story h-16 w-full flex items-center gap-4 px-4 hover:bg-zinc-700 cursor-pointer">
                         <div className='w-12 h-12 overflow-hidden relative'>
@@ -141,13 +150,14 @@ const Stories = () => {
                             <span className='text-start'>
                                 My Story
                             </span>
-                            <span className='text-sm text-zinc-500'>
+                            <span className='text-xs text-zinc-400 font-semibold'>
                                 Click to add story
                             </span>
                         </div>
                     </div>
                 </button>
             </div>
+            {/* my stories */}
             <div className="stories w-full">
                 <h2 className="text-lg font-semibold mb-2 px-4">My Stories</h2>
                 {isFetchingStories && <p className="no-stories-message">Fetching stories...</p>}
@@ -156,15 +166,15 @@ const Stories = () => {
                 ) : (
                     userStories.map((story) => (
                         <div key={story._id} className="story h-16 w-full flex items-center gap-4 px-4 hover:bg-zinc-700 cursor-pointer" onClick={() => handleStoryClick(story)}>
-                            <div className='w-12 h-12 rounded-full bg-green-500 overflow-hidden ring-3 ring-green-400'>
-                                <img src={story.media[0].url} alt="story" className="story-image w-12 h-12 object-cover" />
+                            <div className='w-12 h-12 rounded-full overflow-hidden ring-3 ring-green-400'>
+                                <img src={story.media[story.media.length - 1].url} alt="story" className="story-image w-12 h-12 object-cover" />
                             </div>
                             <div className='flex flex-col w-2/3'>
                                 <span>
-                                    {story.createdBy.fullName}
+                                    My Story
                                 </span>
-                                <span className='text-sm text-zinc-500'>
-                                    {new Date(story.createdAt).toLocaleString()}
+                                <span className='text-xs text-zinc-400 font-semibold'>
+                                    {new Date(story.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
                             <button onClick={(e) => { e.stopPropagation(); handleShowViewers(story._id); }} className="viewers-button">
@@ -176,6 +186,7 @@ const Stories = () => {
                     ))
                 )}
             </div>
+            {/* recent stories */}
             <div className="stories w-full">
                 <h2 className="text-lg font-semibold mb-2 px-4">Recent Stories</h2>
                 {isFetchingStories && <p className="no-stories-message">Fetching stories...</p>}
@@ -184,15 +195,15 @@ const Stories = () => {
                 ) : (
                     recentStories.map((story) => (
                         <div key={story._id} className="story h-16 w-full flex items-center gap-6 px-4 hover:bg-zinc-700 cursor-pointer" onClick={() => handleStoryClick(story)}>
-                            <div className='w-12 h-12 rounded-full bg-green-500 overflow-hidden ring-3 ring-green-400'>
-                                <img src={story.media[0].url} alt="story" className="story-image w-12 h-12 object-cover" />
+                            <div className='w-12 h-12 rounded-full overflow-hidden ring-3 ring-green-400'>
+                                <img src={story.media[story.media.length - 1].url} alt="story" className="story-image w-12 h-12 object-cover" />
                             </div>
                             <div className='flex flex-col'>
                                 <span>
                                     {story.createdBy.fullName}
                                 </span>
-                                <span className='text-sm text-zinc-500'>
-                                    {new Date(story.createdAt).toLocaleString()}
+                                <span className='text-xs text-zinc-400 font-semibold'>
+                                    {new Date(story.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
                         </div>
@@ -255,7 +266,7 @@ const Stories = () => {
 
             {/* to view the stories */}
             {selectedStory && (
-                <div className='w-full h-full'>
+                <div className='w-full h-full z-60'>
                     <div className="w-full h-full fixed inset-0 flex justify-center items-center">
                         <div className="w-full h-full fixed inset-0 bg-gray-400/20 backdrop-blur-sm"></div>
 
@@ -281,10 +292,12 @@ const Stories = () => {
                                         return (
                                             <SwiperSlide key={index} className="h-full w-full">
                                                 <div className="h-full flex flex-col justify-start items-center relative">
+                                                    {/* image on the story */}
                                                     <div className="w-full h-full flex justify-center items-center">
                                                         <img src={mediaItem.url} alt="story" className="max-h-full w-full object-contain" />
                                                     </div>
-                                                    <div className="w-full overflow-hidden flex justify-center z-50 bg-zinc-500/5 absolute bottom-10">
+                                                    {/* text on the story */}
+                                                    {mediaItem.text && <div className="w-full overflow-hidden flex justify-center z-50 bg-zinc-500/5 absolute bottom-10">
                                                         <div className="w-full break-words text-wrap bg-black/50 text-white p-4 text-sm text-center">
                                                             {expanded[index] ? mediaItem.text : `${mediaItem.text.slice(0, 400)}${mediaItem.text.length > 400 ? "..." : ""}`}
                                                             {/* {console.log(expanded)} */}
@@ -301,7 +314,7 @@ const Stories = () => {
                                                                 </button>
                                                             )}
                                                         </div>
-                                                    </div>
+                                                    </div>}
                                                 </div>
                                             </SwiperSlide>
                                         );
@@ -342,9 +355,6 @@ const Stories = () => {
                     <div className="w-full h-full fixed inset-0 bg-gray-400/20 backdrop-blur-sm"></div>
 
                     <div className="modal-content flex flex-col justify-between bg-zinc-800 text-white p-4 rounded-lg relative w-1/2 h-1/2 border-blue-400 border-1">
-                        {/* <button onClick={() => setShowUserSelectionModal(false)} className="close-button absolute top-2 right-2 text-black text-2xl">
-                            &times;
-                        </button> */}
                         <button onClick={() => setShowUserSelectionModal(false)} className="close-button absolute top-2 right-2 text-black text-2xl p-2 rounded-full hover:bg-zinc-600">
                             <img src="/cross-icon.svg" alt="" />
                         </button>
@@ -363,7 +373,7 @@ const Stories = () => {
                                             }
                                         }}
                                     />
-                                    <img src={user.profilePic} alt={user.fullName} className="w-10 h-10 object-cover rounded-full" />
+                                    <img src={user.profilePic || "/avatar.png"} alt={user.fullName} className="w-10 h-10 object-cover rounded-full" />
                                     <span>{user.fullName}</span>
                                 </li>
                             ))}

@@ -32,34 +32,61 @@ const LogInPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         let success = validateForm()
-        if(success === true) login(formData)
+        if (success === true) login(formData)
     };
 
     return (
-        <div>
-            <div className="flex justify-center items-center h-screen">
-                <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-md gap-1 flex flex-col w-80">
-                    <h2 className="text-xl font-bold mb-4">Log In</h2>
-                    <input
-                        type="email"
-                        name="email"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded"
-                        required
-                    />
-                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:cursor-pointer" disabled={isLoginingIn}>Sign In</button>
-                    <Link to={"/signup"}><button className="w-full text-blue-500 border-2 border-blue-500 p-2 rounded hover:cursor-pointer">Sign Up</button></Link>
+        <div className='w-full h-full'>
+            <div className="flex justify-center items-center h-full">
+                <form onSubmit={handleSubmit} className="bg-blue-50 p-6 rounded-lg shadow-md w-1/2 gap-4 flex flex-col">
+                    <div>
+                        <h2 className="text-xl font-bold">Log In</h2>
+                    </div>
+                    <div className='flex flex-col gap-2'>
+                        <div className="flex flex-col">
+                            <div className="text-sm text-zinc-400 flex items-center gap-2">
+                                Email
+                            </div>
+                            <div className="px-2 py-1 bg-base-200 rounded-lg border">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    className="w-full p-2 outline-none rounded"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="text-sm text-zinc-400 flex items-center gap-2">
+                                Password
+                            </div>
+                            <div className="px-2 py-1 bg-base-200 rounded-lg border">
+                                <input
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full p-2 outline-none rounded"
+                                    required
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='flex gap-2'>
+                        <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:cursor-pointer" disabled={isLoginingIn}>
+                            Log In
+                        </button>
+                        <Link to={"/signup"} className="w-full text-blue-500 border-2 border-blue-500 p-2 rounded hover:cursor-pointer">
+                            <button className="text-center w-full hover:cursor-pointer">
+                                Sign Up
+                            </button>
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

@@ -4,7 +4,7 @@ import { getReceiverSocketId, io } from "../lib/socket.js";
 import User from '../models/user.model.js';
 
 export const uploadStory = async (req, res) => {
-    console.log("formdata is: ", req.body);
+    // console.log("formdata is: ", req.body);
     try {
         const { path } = req.file;
         const { text, mediaType } = req.body;
@@ -80,18 +80,30 @@ export const markStoryAsSeen = async (req, res) => {
         const { storyId } = req.params;
         const userId = req.user._id;
 
-        const story = await Story.findById(storyId);
+        // Find the story by ID and populate the fields
+        const story = await Story.findById(storyId)
+            .populate('seenBy', 'fullName profilePic')
+            .populate('createdBy', 'fullName profilePic');
+
         if (!story) {
             return res.status(404).json({ error: 'Story not found' });
         }
 
-        if (!story.seenBy.includes(userId)) {
+        // Add the user to the seenBy array if not already present
+        if (!story.seenBy.some(user => user._id.toString() === userId.toString())) {
             story.seenBy.push(userId);
             await story.save();
         }
 
-        res.status(200).json(story);
+        // Re-fetch the story with updated seenBy and createdBy fields
+        const updatedStory = await Story.findById(storyId)
+            .populate('seenBy', 'fullName profilePic')
+            .populate('createdBy', 'fullName profilePic');
+
+        // Send the populated story in the response
+        res.status(200).json(updatedStory);
     } catch (error) {
+        console.error('Failed to mark story as seen:', error);
         res.status(500).json({ error: 'Failed to mark story as seen' });
     }
 };

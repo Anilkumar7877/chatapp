@@ -9,8 +9,10 @@ const ChatContainer = () => {
   const { selectedUser, messages, getMessages, subscribeToMessages, unsubscribeFromMessages, showGroupInfo } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
-  const isChannel = selectedUser?.hasOwnProperty('description'); // Only channels have descriptions
+  // const isChannel = selectedUser?.hasOwnProperty('description'); // Only channels have descriptions
+  const isChannel = selectedUser?.isChannel; // Only channels have descriptions
   const isChannelAdmin = isChannel && selectedUser?.admin?._id === authUser?._id;
+
 
   useEffect(() => {
     if (selectedUser) {
@@ -65,6 +67,7 @@ const ChatContainer = () => {
   };
 
   console.log(selectedUser)
+  console.log("Messages for selected user:", messages);
   return (
     <div className='flex w-3/4'>
       <div className={`max-h-screen overflow-hidden bg-zinc-800 text-white ${showGroupInfo ? 'w-2/3' : 'w-full'} relative`}>
