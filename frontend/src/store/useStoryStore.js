@@ -37,7 +37,7 @@ export const useStoryStore = create((set, get) => ({
             const res = await axiosInstance.get('/stories');
             const { myStories, recentStories } = res.data;
             set({ stories: { myStories, recentStories } });
-            console.log("fetched stories", get().stories);
+            // console.log("fetched stories", get().stories);
         } catch (error) {
             console.log('Failed to fetch stories', error);
             toast.error('Failed to fetch stories');
@@ -50,7 +50,7 @@ export const useStoryStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post('/stories/upload', formData);
             const updatedStory = res.data;
-            console.log("updatedStory again", updatedStory);
+            // console.log("updatedStory again", updatedStory);
             set((state) => {
                 const userId = updatedStory.createdBy;
                 const authUserId = useAuthStore.getState().authUser._id; // Get the current user's ID
@@ -58,7 +58,7 @@ export const useStoryStore = create((set, get) => ({
 
                 if (userId === authUserId) {
                     // Add the story to `myStories`
-                    console.log("updatedStory in mystories", updatedStory);
+                    // console.log("updatedStory in mystories", updatedStory);
                     const existingStoryIndex = updatedStories.myStories.findIndex(story => story._id === updatedStory._id);
                     if (existingStoryIndex !== -1) {
                         updatedStories.myStories[existingStoryIndex] = updatedStory;
@@ -67,7 +67,7 @@ export const useStoryStore = create((set, get) => ({
                     }
                 } else {
                     // Add the story to `recentStories`
-                    console.log("updatedStory in recentstories", updatedStory);
+                    // console.log("updatedStory in recentstories", updatedStory);
                     const existingStoryIndex = updatedStories.recentStories.findIndex(story => story._id === updatedStory._id);
                     if (existingStoryIndex !== -1) {
                         updatedStories.recentStories[existingStoryIndex] = updatedStory;

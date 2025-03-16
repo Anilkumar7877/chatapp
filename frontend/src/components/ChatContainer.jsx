@@ -66,8 +66,8 @@ const ChatContainer = () => {
     return `${day} ${month} ${year}`;
   };
 
-  console.log(selectedUser)
-  console.log("Messages for selected user:", messages);
+  // console.log(selectedUser)
+  // console.log("Messages for selected user:", messages);
   return (
     <div className='flex w-3/4'>
       <div className={`max-h-screen overflow-hidden bg-zinc-800 text-white ${showGroupInfo ? 'w-2/3' : 'w-full'} relative`}>

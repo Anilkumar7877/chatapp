@@ -26,7 +26,7 @@ export const useChannelStore = create((set, get) => ({
     },
 
     createChannel: async (channelData) => {
-        console.log(channelData);
+        // console.log(channelData);
         try {
             const response = await axiosInstance.post('/channel/create', channelData);
             set(state => ({

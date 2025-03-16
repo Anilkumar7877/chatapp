@@ -89,7 +89,7 @@ const Stories = () => {
     };
 
     const handleStoryClick = async (story) => {
-        console.log("clicked story: ", story);
+        // console.log("clicked story: ", story);
         setSelectedStory(story);
         if (story.createdBy._id !== authUser._id && !story.seenBy.includes(authUser._id)) {
             await markStoryAsSeen(story._id);
@@ -116,7 +116,7 @@ const Stories = () => {
     const userStories = stories.myStories || [];
     const recentStories = stories.recentStories || [];
 
-    console.log(stories)
+    // console.log(stories)
 
     return (
         <div className="stories-container w-1/4 bg-zinc-600 py-4 flex flex-col gap-4 text-white">
@@ -288,7 +288,7 @@ const Stories = () => {
                             <div className='w-full h-8/9 flex flex-col justify-center items-center '>
                                 <Swiper modules={[Navigation, Pagination]} navigation pagination className='h-full w-full'>
                                     {selectedStory.media.map((mediaItem, index) => {
-                                        console.log(mediaItem);
+                                        // console.log(mediaItem);
                                         return (
                                             <SwiperSlide key={index} className="h-full w-full">
                                                 <div className="h-full flex flex-col justify-start items-center relative">

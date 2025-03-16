@@ -79,10 +79,10 @@ const Sidebar = () => {
             const isMessageForSelectedUser = selectedUser && (newMessage.receiverId === selectedUser._id || newMessage.senderId._id === selectedUser._id);
 
             if (newMessage.isChannelMessage) {
-                console.log("newMessage is a channel message", newMessage)
+                // console.log("newMessage is a channel message", newMessage)
                 // Get existing messages for this group
                 const channelMessages = allChatMessages[newMessage.receiverId] || [];
-                console.log("channelMessages are", channelMessages)
+                // console.log("channelMessages are", channelMessages)
 
                 // Create updated messages array with read status
                 const updatedMessages = [
@@ -101,13 +101,13 @@ const Sidebar = () => {
                         [newMessage.receiverId]: updatedMessages
                     }
                 }));
-                console.log("updatedChannelMessages are", updatedMessages)
+                // console.log("updatedChannelMessages are", updatedMessages)
             }
             else if (newMessage.isGroupMessage) {
-                console.log("newMessage is a group message", newMessage)
+                // console.log("newMessage is a group message", newMessage)
                 // Get existing messages for this group
                 const groupMessages = allChatMessages[newMessage.receiverId] || [];
-                console.log("groupMessages are", groupMessages)
+                // console.log("groupMessages are", groupMessages)
 
                 // Create updated messages array with read status
                 const updatedMessages = [
@@ -126,11 +126,11 @@ const Sidebar = () => {
                         [newMessage.receiverId]: updatedMessages
                     }
                 }));
-                console.log("updatedMessages are", updatedMessages)
+                // console.log("updatedMessages are", updatedMessages)
             }
             else {
                 // Existing direct message handling
-                console.log("newMessage is a direct message", newMessage)
+                // console.log("newMessage is a direct message", newMessage)
 
                 const chatMessages = allChatMessages[newMessage.senderId._id] || [];
 

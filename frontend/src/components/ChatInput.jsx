@@ -38,7 +38,7 @@ const ChatInput = () => {
                 toastId = toast.loading("Uploading file...");
 
                 const uploadResponse = await documentUpload(formData);
-                console.log("uploadResponse: ", uploadResponse);
+                // console.log("uploadResponse: ", uploadResponse);
                 fileUrl = uploadResponse.path;
                 messageText = document.name;
 
@@ -59,7 +59,7 @@ const ChatInput = () => {
             if (fileInputRef.current) fileInputRef.current.value = "";
             if (documentInputRef.current) documentInputRef.current.value = "";
         } catch (error) {
-            console.log("Failed to send Message: ", error)
+            // console.log("Failed to send Message: ", error)
 
             // Update the toast to error if the upload fails
             if (toastId) {
@@ -81,7 +81,7 @@ const ChatInput = () => {
             setImagePreview(reader.result)
         }
         reader.readAsDataURL(file)
-        console.log("file size: ", file.size)
+        // console.log("file size: ", file.size)
     }
 
     const handleDocumentChange = async (e) => {

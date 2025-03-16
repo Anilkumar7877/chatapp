@@ -45,7 +45,7 @@ export const useChatStore = create((set, get) => ({
             const res = await axiosInstance.get("/group/getGroups");
             if (res && res.data) {
                 set({ groups: res.data });
-                console.log("groups: ", res.data);
+                // console.log("groups: ", res.data);
             } else {
                 toast.error("Failed to fetch groups");
             }
@@ -61,7 +61,7 @@ export const useChatStore = create((set, get) => ({
         try {
             const res = await axiosInstance.get(`/message/${userId}`);
             set({ messages: res.data });
-            console.log("messages in the usechatstore: ", messages);
+            // console.log("messages in the usechatstore: ", messages);
         } catch (error) {
             console.log("error in getMessages", error);
             // toast.error(error.response?.data?.message);
@@ -97,7 +97,7 @@ export const useChatStore = create((set, get) => ({
         // console.log("inside the useChatStore")
         const { selectedUser, messages } = get()
         try {
-            console.log("message data ", data)
+            // console.log("message data ", data)
             const res = await axiosInstance.post(`/message/send/${selectedUser._id}`, data)
             set({ messages: [...messages, res.data] })
             set({
@@ -130,7 +130,7 @@ export const useChatStore = create((set, get) => ({
 
             const isChannelMessage = newMessage.isChannelMessage;
             if (isChannelMessage) {
-                console.log("received a channel newMessage event", newMessage);
+                // console.log("received a channel newMessage event", newMessage);
                 const isMessageSentFromSelectedUser = newMessage.receiverId === selectedUser._id;
                 if (!isMessageSentFromSelectedUser) return;
                 const isTargetChannel = newMessage.receiverId === selectedUser._id;
@@ -148,14 +148,14 @@ export const useChatStore = create((set, get) => ({
                 return;
             }
             if (!newMessage.isGroupMessage) {
-                console.log("received a newMessage event1", newMessage);
+                // console.log("received a newMessage event1", newMessage);
                 const isMessageSentFromSelectedUser = newMessage.senderId._id === selectedUser._id ||
                     newMessage.receiverId === selectedUser._id; //only in case of DM
-                console.log("isMessageSentFromSelectedUser: ", isMessageSentFromSelectedUser);
+                // console.log("isMessageSentFromSelectedUser: ", isMessageSentFromSelectedUser);
                 if (!isMessageSentFromSelectedUser) return;
             }
             else {
-                console.log("received a newMessage event", newMessage);
+                // console.log("received a newMessage event", newMessage);
                 const isMessageSentFromSelectedUser = newMessage.receiverId === selectedUser._id;
                 if (!isMessageSentFromSelectedUser) return;
                 const isTargetGroup = newMessage.receiverId === selectedUser._id;

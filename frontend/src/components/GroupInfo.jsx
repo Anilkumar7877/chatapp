@@ -15,9 +15,11 @@ const GroupInfoPage = () => {
     const [error, setError] = useState(null);
     const [selectedImg, setSelectedImg] = useState(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const { updateGroupInfo, isUpdatingGroupInfo, leaveGroup, groupInfo, getGroupInfo } = useGroupStore();
     const { selectedUser, users, addUserToGroup, messages } = useChatStore()
     const { authUser } = useAuthStore()
     const [showAllImages, setShowAllImages] = useState(false);
+    const { updateChannelInfo, isUpdatingChannelInfo, leaveChannel } = useChannelStore()
     const [showAllDocuments, setShowAllDocuments] = useState(false);
 
     const isChannel = selectedUser?.description;
@@ -31,21 +33,18 @@ const GroupInfoPage = () => {
         groupId = selectedUser._id;
     }
 
-    const { updateChannelInfo, isUpdatingChannelInfo, leaveChannel } = useChannelStore()
-    const { updateGroupInfo, isUpdatingGroupInfo, leaveGroup } = useGroupStore();
-
     const handleAddUser = (userId) => {
         addUserToGroup(selectedUser._id, userId);
         setIsDropdownOpen(false); // Close dropdown after selection
     };
 
-    console.log(messages)
+    // console.log(messages)
 
     const imageMessages = messages.filter((message) => message.image);
     const documentMessages = messages.filter((message) => message.file);
 
-    console.log(imageMessages)
-    console.log(documentMessages)
+    // console.log(imageMessages)
+    // console.log(documentMessages)
     // Add these new state variables after the existing useState declarations
     const [isEditingDescription, setIsEditingDescription] = useState(false);
     const [newDescription, setNewDescription] = useState(selectedUser?.description || '');
@@ -91,19 +90,8 @@ const GroupInfoPage = () => {
     };
 
     useEffect(() => {
-        const fetchGroupInfo = async () => {
-            try {
-                const response = await axios.get(`/api/groups/${groupId}`);
-                setGroup(response.data);
-            } catch (err) {
-                setError("Failed to fetch group information.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchGroupInfo();
-    }, [groupId]);
+        getGroupInfo(groupId);
+    }, [getGroupInfo]);
 
     const handleLeaveGroup = async () => {
         try {
@@ -135,7 +123,7 @@ const GroupInfoPage = () => {
         return '📎';
     };
 
-    if (loading) return <p>Loading group information...</p>;
+    // if (loading) return <p>Loading group information...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
     if (showAllImages) {
@@ -195,13 +183,16 @@ const GroupInfoPage = () => {
             </div>
         );
     }
+    
+    // console.log("selectedUser", selectedUser)
+    // console.log("groupInfo", groupInfo)
 
     return (
         <div className="mx-auto p-6 bg-zinc-800 text-white h-full relative flex flex-col overflow-y-scroll border-1 border-zinc-400 border-collapse">
             <div className="flex justify-center items-center">
                 <div className="relative w-full flex items-center flex-col">
                     <div className="relative">
-                        <img src={selectedImg || selectedUser.profilePic || "/avatar.png"} alt="groupProfile" className="size-48 object-cover rounded-full" />
+                        <img src={selectedImg || groupInfo.profilePic || "/avatar.png"} alt="groupProfile" className="size-48 object-cover rounded-full" />
                     </div>
                     {isAdmin && (
                         <label
@@ -231,8 +222,8 @@ const GroupInfoPage = () => {
                     </p>)}
                 </div>
             </div>
-            <h1 className="text-2xl font-bold mb-4 text-center">{selectedUser.name}</h1>
-            <p className="text-gray-300">Group ID: {selectedUser._id}</p>
+            <h1 className="text-2xl font-bold mb-4 text-center">{groupInfo.name}</h1>
+            {/* <p className="text-gray-300">Group ID: {selectedUser._id}</p> */}
 
             {/* {isChannel && (<p>{selectedUser.description}</p>)} */}
             {/* // Replace the existing description section with this new code */}
@@ -266,7 +257,7 @@ const GroupInfoPage = () => {
                             </button>
                         </div>
                     ) : (
-                        <p className="bg-zinc-700 p-4 rounded-lg">{selectedUser.description}</p>
+                        <p className="bg-zinc-700 p-4 rounded-lg">{groupInfo.description}</p>
                     )}
                 </div>
             )}
@@ -332,12 +323,12 @@ const GroupInfoPage = () => {
 
             {!isChannel && (<h2 className="text-xl font-semibold mt-4 mb-2">Group Members:</h2>)}
             {!isChannel && (<ul className="bg-zinc-700 p-4 rounded-lg">
-                {selectedUser.members?.map((member) => (
+                {groupInfo.members?.map((member) => (
                     <li key={member._id} className="py-2 flex items-center gap-2">
                         <img src={member.profilePic || "/avatar.png"} alt="" className="w-8 h-8 rounded-full" />
                         <span className="flex gap-2">
                             {member.fullName}
-                            {selectedUser.admin.includes(member._id) && (
+                            {groupInfo.admin.includes(member._id) && (
                                 <span className="bg-blue-800 text-blue-200 rounded-full px-2 flex justify-center items-center">
                                     Admin
                                 </span>
@@ -370,13 +361,15 @@ const GroupInfoPage = () => {
                                     />
                                     <span>{user.fullName}</span>
                                 </div>
-                                <span className="">➕</span>
+                                <span className="">
+                                    <img src="/plus-icon.svg" alt="" />
+                                </span>
                             </div>
                         ))}
                     </div>
                 )}
-                {console.log(authUser?.channelsJoined.includes(groupId))}
-                {console.log(groupId)}
+                {/* {console.log(authUser?.channelsJoined.includes(groupId))} */}
+                {/* {console.log(groupId)} */}
                 {isGroup && (<button
                     onClick={() => handleLeaveGroup(groupId)}
                     className=" bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg w-full hover:cursor-pointer"

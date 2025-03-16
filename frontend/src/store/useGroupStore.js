@@ -4,8 +4,22 @@ import { useAuthStore } from "./useAuthStore"
 import toast from "react-hot-toast"
 
 export const useGroupStore = create((set, get) => ({
+    groupInfo: null,
     allGroups: [],
     isUpdatingGroupInfo: false,
+
+    getGroupInfo: async (groupId) => {
+        try {
+            const res = await axiosInstance.get(`/group/${groupId}`); // Call the backend API
+            set({ groupInfo: res.data }); // Store the group data in the state
+            // toast.success("Group information fetched successfully!");
+            return res.data; // Return the group data
+        } catch (error) {
+            console.error("Error fetching group info:", error);
+            // toast.error(error.response?.data?.message || "Failed to fetch group info");
+            return null; // Return null if there is an error
+        }
+    },
 
     getGroups: async () => {
         try {

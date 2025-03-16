@@ -95,7 +95,7 @@ export const useAuthStore = create((set, get) => ({
             set({ authUser: res.data });
             toast.success('Story privacy settings updated successfully');
         } catch (error) {
-            console.log("error in updateStoryPrivacy", error)
+            // console.log("error in updateStoryPrivacy", error)
             toast.error('Failed to update story privacy settings');
         }
     },

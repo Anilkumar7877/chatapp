@@ -26,7 +26,7 @@ export const getUsersForSidebar = async (req, res) => {
 export const searchUserByUniqueId = async (req, res) => {
     try {
         const { uniqueId } = req.params;
-        console.log("uniqueId", uniqueId);
+        // console.log("uniqueId", uniqueId);
         if (!uniqueId) {
             return res.status(400).json({ message: "uniqueId parameter is required" });
         }
@@ -115,11 +115,11 @@ export const sendMessages = async (req, res) => {
             await newMessage.save();
             const populatedMessage = await newMessage.populate("senderId", "fullName profilePic");
 
-            console.log(channelMembers);
+            // console.log(channelMembers);
 
             // Emit to all channel members
             io.to(userToChatId.toString()).emit("newMessage", populatedMessage);
-            console.log(`Sent message to group room: ${userToChatId}`);
+            // console.log(`Sent message to group room: ${userToChatId}`);
         }
         else if (isGroup) {
             const groupMembers = isGroup.members;
@@ -139,7 +139,7 @@ export const sendMessages = async (req, res) => {
             const populatedMessage = await newMessage.populate("senderId", "fullName profilePic");
 
             io.to(userToChatId.toString()).emit("newMessage", populatedMessage);
-            console.log(`Sent message to group room: ${userToChatId}`);
+            // console.log(`Sent message to group room: ${userToChatId}`);
 
         } else {
             newMessage = new Message({

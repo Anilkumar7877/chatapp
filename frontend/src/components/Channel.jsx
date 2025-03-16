@@ -62,10 +62,10 @@ const Channel = () => {
         }
     };
 
-    console.log('allChannels', allChannels);
-    console.log('channels', channels);
-    console.log('filteredChannels', filteredChannels);
-    console.log('exploreChannels', exploreChannels);
+    // console.log('allChannels', allChannels);
+    // console.log('channels', channels);
+    // console.log('filteredChannels', filteredChannels);
+    // console.log('exploreChannels', exploreChannels);
 
     return (
         <div className='w-1/4 flex flex-col gap-6 text-white bg-zinc-600 py-4 overflow-y-scroll'>

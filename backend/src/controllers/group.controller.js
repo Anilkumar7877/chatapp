@@ -100,7 +100,7 @@ export const addUserToGroup = async (req, res) => {
 export const leaveGroup = async (req, res) => {
     try {
         const { groupId } = req.body;
-        console.log("groupId is ", groupId);
+        // console.log("groupId is ", groupId);
         const userId = req.user._id;
 
         const group = await Group.findById(groupId);
@@ -122,6 +122,26 @@ export const leaveGroup = async (req, res) => {
     } catch (error) {
         console.log("Error in leaveGroup: ", error);
         res.status(500).json({ message: "Error leaving group in group.controller" });
+    }
+};
+
+export const getGroupInfo = async (req, res) => {
+    try {
+        const { groupId } = req.params;
+
+        // Find the group by ID and populate its members
+        const group = await Group.findById(groupId)
+            .populate('members', 'fullName profilePic email') // Populate member details
+            .populate('admin', 'fullName profilePic email'); // Populate admin details
+
+        if (!group) {
+            return res.status(404).json({ message: "Group not found" });
+        }
+
+        res.status(200).json(group);
+    } catch (error) {
+        console.error("Error in getGroupInfo:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 };
 
